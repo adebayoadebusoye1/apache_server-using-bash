@@ -13,7 +13,24 @@ The AMi - Amazon machine image is that option on Amazon launch profile which all
 Instance type - the instance type is also a requirement...this allows you to pick the system you desire in terms of size, processor, storage and so on... for a tiny prokect like this, t2.micro should be sufficient. NB the prices vary per instance type.
 key_name: another security feature that enables profile/role authentication. The keypair is a key that is base-64 encoded. The keypair must be supplied for remote connection enabling.
 count = '*' this is just to specify the number of instances we desire.
-userdata - the user data is the option that enables bootstrapping which is the activity or function which is performed at launch time. In this case, the command imbedded in the code will update systems and libraries, install apache service, restart and enable the service so the system is able to see it and utilize it. Once everything is in order, it will output the content of the html file within the apache service. the content it should display should be "I will never be poor in my life!". 
+userdata - the user data is the option that enables bootstrapping which is the activity or function which is performed at launch time. In this case, the command imbedded in the code will update systems and libraries, install apache service, restart and enable the service so the system is able to see it and utilize it. Let's take a good look at the commands; 
+<<-EOF
+    #!/bin/bash  
+    sudo apt update -y
+    sudo apt install apache2 -y
+    systemctl restart apache2
+    systemctl enable apache2
+    echo "I will never be broke in my life!" > /var/www/html/index.html
+    EOF 
+                              Let's analyse the code:
+    #!/bin/bash ----this is the command that tells the system that this is a bash script. 
+    sudo apt update -y....."sudo" is a unix/linux command that elevates the user's status to root, enabling the user to be 
+    able to perform root tasks.
+    sudo apt install apache2 -y ....apt is a command synonymous with debian, ubuntu, linux and so on. it is used to manage package installation, deletion, or update. In this scenario, it will install apache2 service. The -y option is that which pre-authorizes the installation. By default, the system will often times ask if you're sure you want to do the installation. Because this is a script for automation, not enabling this will cause the installation not to go thru. By the way, "y" is for yes; meaning go ahead and install.
+systemctl restart apache2 -----it is important to restart the system so that the system reboots and detects the change.
+systemctl enable apache2 -----by this command, you're basically enabling apache service. Without enabling it, it may not work.
+echo "I will never be broke in my life!" > /var/www/html/index.html ----the echo command is a standard linux command for showing output. The expected output which is displayed if all steps are followed correctly. The apache service hosts the html folder containing the web content.
+Once everything is in order, it will output the content of the html file within the apache service. the content it should display should be "I will never be poor in my life!". 
 The output section refers to the instruction to display a set of values on the screen (ip addresses of servers).
 step-by-step:
 step1 - from your source-code editor, run the terraform file ....start by using 
